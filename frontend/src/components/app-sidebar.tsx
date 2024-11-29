@@ -1,4 +1,4 @@
-import { Calendar, ChevronUp, Home, Inbox, Search, Settings, User2, Wallet } from "lucide-react"
+import { Calendar, ChevronUp, Home, Inbox, Search, Settings, User2, Wallet, ChartNoAxesCombined } from "lucide-react"
 
 import {
   Sidebar,
@@ -26,7 +26,7 @@ const items = [
   {
     title: "Reports",
     url: "#",
-    icon: Inbox,
+    icon: ChartNoAxesCombined,
   },
   
   {
@@ -39,7 +39,7 @@ const items = [
 export async function AppSidebar(): Promise<React.JSX.Element> {
     const session = await auth();
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" >
         <SidebarHeader>
             <SidebarMenu>
             <SidebarMenuItem>
