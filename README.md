@@ -1,14 +1,22 @@
 # Personal Finance App
 
-A full-stack application for managing personal finances.
+A full-stack application for managing personal finances built with Next.js and Python.
 
 ## Project Structure
 
 ```
 personal-finance-app/
 ├── frontend/          # Next.js frontend application
-└── backend/          # Backend application
+└── backend/          # Python backend application
 ```
+
+## Features
+
+- User authentication
+- Expense tracking
+- Income management
+- Financial analytics
+- Budget planning
 
 ## Getting Started
 
@@ -16,12 +24,14 @@ personal-finance-app/
 
 - Node.js (v16 or higher)
 - npm or yarn
+- Python 3.8+
+- pip
 
 ### Installation
 
 1. Clone the repository
 ```bash
-git clone [your-repo-url]
+git clone https://github.com/ebatarlar/personal-finance.git
 cd personal-finance-app
 ```
 
@@ -34,7 +44,7 @@ npm install
 3. Install Backend Dependencies
 ```bash
 cd ../backend
-npm install
+pip install -r requirements.txt
 ```
 
 ### Development
@@ -42,7 +52,7 @@ npm install
 1. Start the backend server:
 ```bash
 cd backend
-npm run dev
+python main.py
 ```
 
 2. Start the frontend development server:
@@ -50,6 +60,8 @@ npm run dev
 cd frontend
 npm run dev
 ```
+
+The application will be available at `http://localhost:3000`
 
 ## Contributing
 
