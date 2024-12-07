@@ -41,7 +41,7 @@ async def test_db():
     except Exception as e:
         return {"status": "error", "message": f"Failed to connect to MongoDB: {str(e)}"}
 
-@app.post("/api/transactions")
+@app.post("/api/transactions/create")
 async def create_transaction(transaction: TransactionCreate):
     try:
         # Convert the transaction model to a dictionary
