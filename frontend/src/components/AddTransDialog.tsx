@@ -10,17 +10,20 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useToast } from "@/hooks/use-toast";
 import { useState } from "react"
 
 const AddTransDialog = () => {
-  const [amount, setAmount] = useState("")
+  
+  const [amount, setAmount]           = useState("")
   const [description, setDescription] = useState("")
-  const [open, setOpen] = useState(false)
+  const [open, setOpen]               = useState(false)
+  const { toast }                     = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch("http://localhost:8000/api/transactions", {
+      const response = await fetch("http://localhost:8000/api/transactions/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,9 +36,13 @@ const AddTransDialog = () => {
 
       if (response.ok) {
         // Clear form and close dialog
-        setAmount("")
-        setDescription("")
-        setOpen(false)
+        setAmount("");
+        setDescription("");
+        setOpen(false);
+        toast({
+          title: "Success",
+          description: "Transaction has been created successfully",
+        });
       } else {
         console.error("Failed to create transaction")
       }
@@ -49,7 +56,7 @@ const AddTransDialog = () => {
       <DialogTrigger asChild>
         <Button>Add Transaction</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-[90%]">
         <DialogHeader>
           <DialogTitle>Add New Transaction</DialogTitle>
         </DialogHeader>

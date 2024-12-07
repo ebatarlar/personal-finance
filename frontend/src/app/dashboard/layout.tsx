@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { redirect } from "next/navigation"
 import { auth } from "../../../auth";
+import { Toaster } from "@/components/ui/toaster";
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -18,6 +19,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
           <main className="min-h-screen bg-background text-foreground">
             <SidebarTrigger />
             {children}
+            <Toaster />
           </main>
         </SidebarProvider>
       </div>
