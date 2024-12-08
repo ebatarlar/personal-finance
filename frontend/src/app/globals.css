@@ -63,6 +63,7 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --sidebar-background: 0 0% 6%;
+  
   }
 }
 
@@ -75,3 +76,5 @@ body {
     @apply bg-background text-foreground dark;
   }
 }
+
+

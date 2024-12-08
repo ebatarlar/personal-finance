@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import db
 from pydantic import BaseModel
 from datetime import datetime
+from app.routes.user_routes import router as user_router
 
 app = FastAPI(title="Personal Finance API")
 
@@ -15,10 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class TransactionCreate(BaseModel):
-    amount: float
-    description: str
-    date: datetime = datetime.now()
+# Include user routes
+app.include_router(user_router, prefix="/api", tags=["users"])
 
 @app.on_event("startup")
 async def startup():
@@ -27,6 +26,11 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.close_database_connection()
+
+class TransactionCreate(BaseModel):
+    amount: float
+    description: str
+    date: datetime = datetime.now()
 
 @app.get("/")
 async def root():

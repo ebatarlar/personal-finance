@@ -2,8 +2,28 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import AddTransDialog from "@/components/AddTransDialog"
+import { DataTable } from "./components/tables/transactions-table/transactions-table"
+import { columns } from "./components/tables/transactions-table/columns"
+import { TransactionData } from "./types/table-types"
 
-export default function DashboardPage() {
+async function getData(): Promise<TransactionData[]> {
+  // Fetch data from your API here.
+  return [
+    {
+      id: "728ed52f",
+      date: "2023-06-01",
+      amount: 100,
+      description: "pending",
+      category: "test"
+    }
+    // ...
+  ]
+}
+
+export default async function DashboardPage() {
+
+  const data = await getData();
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -51,49 +71,18 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+
+
+        
+        <Card className="w-fit">
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>2024-01-15</TableCell>
-                  <TableCell>Grocery Shopping</TableCell>
-                  <TableCell>Food</TableCell>
-                  <TableCell className="text-right">-$156.32</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2024-01-14</TableCell>
-                  <TableCell>Salary Deposit</TableCell>
-                  <TableCell>Income</TableCell>
-                  <TableCell className="text-right text-green-600">+$4,935.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2024-01-13</TableCell>
-                  <TableCell>Netflix Subscription</TableCell>
-                  <TableCell>Entertainment</TableCell>
-                  <TableCell className="text-right">-$15.99</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2024-01-12</TableCell>
-                  <TableCell>Gas Station</TableCell>
-                  <TableCell>Transportation</TableCell>
-                  <TableCell className="text-right">-$45.23</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+          <DataTable columns={columns} data={data} />
           </CardContent>
         </Card>
+        
         
         <Card>
           <CardHeader>
@@ -122,18 +111,7 @@ export default function DashboardPage() {
                   <TableCell>$300.00</TableCell>
                   <TableCell className="text-right text-green-600">$54.77</TableCell>
                 </TableRow>
-                <TableRow>
-                  <TableCell>Entertainment</TableCell>
-                  <TableCell>$185.99</TableCell>
-                  <TableCell>$200.00</TableCell>
-                  <TableCell className="text-right text-green-600">$14.01</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Utilities</TableCell>
-                  <TableCell>$310.45</TableCell>
-                  <TableCell>$300.00</TableCell>
-                  <TableCell className="text-right text-red-600">-$10.45</TableCell>
-                </TableRow>
+                
               </TableBody>
             </Table>
           </CardContent>

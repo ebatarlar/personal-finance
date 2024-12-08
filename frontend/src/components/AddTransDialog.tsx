@@ -56,10 +56,16 @@ const AddTransDialog = () => {
       <DialogTrigger asChild>
         <Button>Add Transaction</Button>
       </DialogTrigger>
-      <DialogContent className="w-[90%]">
+      <DialogContent 
+        className="w-[90%]" 
+        aria-describedby="dialog-description"
+      >
         <DialogHeader>
           <DialogTitle>Add New Transaction</DialogTitle>
         </DialogHeader>
+        <div id="dialog-description" className="sr-only">
+          Form to add a new financial transaction with amount and description fields
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">

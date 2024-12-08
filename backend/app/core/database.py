@@ -9,6 +9,7 @@ load_dotenv()
 
 class Database:
     client: Optional[AsyncIOMotorClient] = None
+    db = None
     
     async def connect_to_database(self, app: FastAPI):
         try:
