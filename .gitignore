@@ -44,3 +44,6 @@
 
 # Local Netlify folder
 .netlify
+
+# windsurf rules
+.windsurfrules

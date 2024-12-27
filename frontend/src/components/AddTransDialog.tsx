@@ -13,12 +13,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react"
+import { Calendar } from "./ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from 'date-fns';
+import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 
 const AddTransDialog = () => {
   
   const [amount, setAmount]           = useState("")
   const [description, setDescription] = useState("")
+  const [date, setDate]               = useState<Date>()
   const [open, setOpen]               = useState(false)
+  const [transactionType, setTransactionType] = useState<string>("")
   const { toast }                     = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,8 +45,10 @@ const AddTransDialog = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          date,
           amount: parseFloat(amount),
           description,
+          type: transactionType
         }),
       })
 
@@ -64,6 +81,48 @@ const AddTransDialog = () => {
         </DialogDescription>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="amount" className="text-right">
+                Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[240px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="amount" className="text-right">
+                Type
+              </Label>
+              <Select onValueChange={setTransactionType} value={transactionType}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                </SelectContent>
+              </Select>
+
+            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="amount" className="text-right">
                 Amount

@@ -4,11 +4,11 @@ from app.services.user_service import user_service
 
 router = APIRouter()
 
-@router.post("/users", response_model=UserResponse)
+@router.post("/users/create", response_model=UserResponse)
 async def create_user(user: UserCreate):
     try:
         created_user = await user_service.create_user(user)
-        return UserResponse(**created_user.dict())
+        return UserResponse(**created_user.model_dump())
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -24,7 +24,7 @@ async def get_user_by_email(email: str):
                 status_code=404,
                 detail=f"User with email {email} not found"
             )
-        return UserResponse(**user.dict())
+        return UserResponse(**user.model_dump())
     except HTTPException:
         raise
     except Exception as e:

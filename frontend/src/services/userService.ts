@@ -7,7 +7,7 @@ interface User {
 export const userService = {
   async createOrUpdateUser(userData: User) {
     try {
-      const response = await fetch('http://localhost:8000/api/users', {
+      const response = await fetch('http://localhost:8000/api/users/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

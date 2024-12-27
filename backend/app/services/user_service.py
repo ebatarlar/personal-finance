@@ -11,7 +11,9 @@ class UserService:
     
     @property
     def collection(self):
-        return self.db.db.users if self.db.db is not None else None
+        if self.db is None or self.db.db is None:
+            return None
+        return self.db.db.users
     
     async def create_user(self, user: UserCreate) -> UserInDB:
         if self.collection is None:
@@ -23,14 +25,15 @@ class UserService:
             return existing_user
             
         # Create new user
+        current_time = datetime.now(datetime.timezone.utc)  
         user_in_db = UserInDB(
-            **user.dict(),
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            **user.model_dump(),
+            created_at=current_time,
+            updated_at=current_time
         )
         
         # Convert UUID to string for MongoDB storage
-        user_dict = user_in_db.dict()
+        user_dict = user_in_db.model_dump()
         user_dict["id"] = str(user_dict["id"])
         
         # Insert into database
@@ -67,10 +70,11 @@ class UserService:
         if self.collection is None:
             raise Exception("Database not initialized")
             
-        update_data["updated_at"] = datetime.utcnow()
+        current_time = datetime.now(datetime.timezone.utc)  # Updated to use timezone-aware UTC time
+        update_data["updated_at"] = current_time
         result = await self.collection.update_one(
             {"id": str(user_id)},
-            {"$set": update_data}
+            {"$set": update_data.model_dump()}
         )
         if result.modified_count:
             return await self.get_user_by_id(user_id)
