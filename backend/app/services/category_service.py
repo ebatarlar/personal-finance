@@ -4,9 +4,20 @@ from app.core.database import db
 from fastapi import HTTPException
 
 class CategoryService:
-    @staticmethod
-    async def get_default_categories() -> List[CategoryResponse]:
-        cursor = db.db.defaultCategories.find({})
+    def __init__(self):
+        self.db = db
+    
+    @property
+    def collection(self):
+        if self.db is None or self.db.db is None:
+            return None
+        return self.db.db.users
+
+    async def get_default_categories(self) -> List[CategoryResponse]:
+        if self.db is None or self.db.db is None:
+            raise Exception("Database not initialized")
+            
+        cursor = self.db.db.defaultCategories.find({})
         categories = []
         async for category in cursor:
             categories.append(
@@ -18,9 +29,11 @@ class CategoryService:
             )
         return categories
 
-    @staticmethod
-    async def get_user_custom_categories(user_id: str) -> List[CategoryResponse]:
-        user = await db.db.users.find_one({"id": user_id})
+    async def get_user_custom_categories(self, user_id: str) -> List[CategoryResponse]:
+        if self.collection is None:
+            raise Exception("Database not initialized")
+            
+        user = await self.collection.find_one({"id": user_id})
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
@@ -30,20 +43,21 @@ class CategoryService:
             is_default=False
         ) for category in user.get("customCategories", [])]
 
-    @staticmethod
-    async def get_all_categories(user_id: str) -> List[CategoryResponse]:
-        default_categories = await CategoryService.get_default_categories()
-        custom_categories = await CategoryService.get_user_custom_categories(user_id)
+    async def get_all_categories(self, user_id: str) -> List[CategoryResponse]:
+        default_categories = await self.get_default_categories()
+        custom_categories = await self.get_user_custom_categories(user_id)
         return default_categories + custom_categories
 
-    @staticmethod
-    async def add_custom_category(user_id: str, category: CategoryCreate) -> CategoryResponse:
+    async def add_custom_category(self, user_id: str, category: CategoryCreate) -> CategoryResponse:
+        if self.collection is None:
+            raise Exception("Database not initialized")
+            
         new_category = {
             "type": category.type,
             "name": category.name
         }
         
-        result = await db.db.users.update_one(
+        result = await self.collection.update_one(
             {"id": user_id},
             {"$push": {"customCategories": new_category}}
         )
@@ -53,9 +67,11 @@ class CategoryService:
             
         return CategoryResponse(**new_category, is_default=False)
 
-    @staticmethod
-    async def delete_custom_category(user_id: str, category_name: str) -> bool:
-        result = await db.db.users.update_one(
+    async def delete_custom_category(self, user_id: str, category_name: str) -> bool:
+        if self.collection is None:
+            raise Exception("Database not initialized")
+            
+        result = await self.collection.update_one(
             {"id": user_id},
             {"$pull": {"customCategories": {"name": category_name}}}
         )
@@ -64,3 +80,6 @@ class CategoryService:
             raise HTTPException(status_code=404, detail="Category not found or user not found")
             
         return True
+
+# Create a global instance
+category_service = CategoryService()
