@@ -45,7 +45,7 @@ const AddTransDialog = () => {
 
     const transactionData = {
       user_id: session?.user.id,
-      type: transactionType === 'expense' ? 0 : 1,
+      type: transactionType,
       categories: ["Uncategorized"],
       amount: typeof amount === 'number' ? amount : parseFloat(amount),
       date: date ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),

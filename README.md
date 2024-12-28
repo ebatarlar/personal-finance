@@ -16,13 +16,17 @@ The backend directory contains the server-side code and services for the applica
   - `models/`: Database models.
     - `user.py`: User data model.
     - `transaction.py`: Transaction data model.
+    - `category.py`: Category data model.
   - `routes/`: Defines the API routes for handling requests.
     - `user_routes.py`: Handles user-related API requests.
     - `transaction_routes.py`: Handles transaction-related API requests.
+    - `category_routes.py`: Handles category-related API requests.
   - `schemas/`: Data validation schemas.
+    - `category.py`: Category data validation schemas.
   - `services/`: Contains business logic and services used by the routes.
     - `user_service.py`: Logic related to user operations.
     - `transaction_service.py`: Logic related to transaction operations.
+    - `category_service.py`: Logic related to category operations.
 - `main.py`: The entry point for the backend application.
 - `requirements.txt`: Python dependencies.
 - `test_db_connection.py`: Script to test database connections.
@@ -40,15 +44,18 @@ backend/
 │   │   └── database.py
 │   ├── models/
 │   │   ├── __pycache__/
+│   │   ├── category.py
 │   │   ├── transaction.py
 │   │   └── user.py
 │   ├── routes/
 │   │   ├── __pycache__/
+│   │   ├── category_routes.py
 │   │   ├── transaction_routes.py
 │   │   └── user_routes.py
 │   ├── schemas/
 │   └── services/
 │       ├── __pycache__/
+│       ├── category_service.py
 │       ├── transaction_service.py
 │       └── user_service.py
 ├── main.py

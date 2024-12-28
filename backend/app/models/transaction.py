@@ -1,19 +1,18 @@
+import string
 from uuid import UUID
 from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, timezone
 from enum import Enum
 
-class TransactionType(Enum):
-    EXPENSE = 0
-    INCOME = 1
+
 
 class Transaction(BaseModel):
     """Model representing a financial transaction."""
     """Represents a financial transaction with its attributes."""
     """Attributes:
         user_id (UUID): The unique identifier for the user.
-        type (TransactionType): The type of transaction (expense or income).
+        type (str): The type of transaction (expense or income).
         categories (List[str]): A list of categories associated with the transaction.
         amount (float): The amount of money involved in the transaction.
         date (datetime): The date of the transaction in Y-m-d format.
@@ -22,7 +21,7 @@ class Transaction(BaseModel):
         updated_at (datetime): The timestamp when the transaction was last updated.
     """
     user_id: UUID
-    type: TransactionType
+    type: str
     categories: List[str]  
     amount: float
     date: datetime  # Should be in Y-m-d format
@@ -30,16 +29,13 @@ class Transaction(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    @field_validator('type', mode='before')
+
+    @field_validator('type')
     @classmethod
-    def validate_type(cls, v):
-        if isinstance(v, (int, str)):
-            try:
-                if isinstance(v, str):
-                    return TransactionType[v.upper()]
-                return TransactionType(v)
-            except (KeyError, ValueError):
-                raise ValueError(f'Invalid transaction type: {v}')
+    def validate_type(cls, v: str) -> str:
+        v = v.lower()
+        if v not in ["income", "expense"]:
+            raise ValueError("Transaction type must be either 'income' or 'expense'")
         return v
 
     @field_validator('date', mode='before')
@@ -54,7 +50,6 @@ class Transaction(BaseModel):
 
     class Config:
         json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            UUID: lambda v: str(v),
-            TransactionType: lambda v: v.value
+            datetime: lambda v: v.strftime('%Y-%m-%d') if hasattr(v, 'strftime') else v,
+            UUID: lambda v: str(v)
         }

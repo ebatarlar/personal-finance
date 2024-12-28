@@ -1,6 +1,6 @@
 from datetime import datetime
 from uuid import UUID
-from app.models.transaction import Transaction, TransactionType
+from app.models.transaction import Transaction
 from app.core.database import db
 
 class TransactionService:
@@ -20,8 +20,9 @@ class TransactionService:
         # Convert UUID to string for MongoDB storage
         transaction_dict["user_id"] = str(transaction_dict["user_id"])
         
-        # Convert Enum to integer for MongoDB storage
-        transaction_dict["type"] = transaction_dict["type"].value
+        # Store type as string
+        if transaction_dict["type"] not in ["income", "expense"]:
+            raise ValueError("Transaction type must be either 'income' or 'expense'")
         
         # Convert datetime objects to ISO format strings
         for field in ["date", "created_at", "updated_at"]:

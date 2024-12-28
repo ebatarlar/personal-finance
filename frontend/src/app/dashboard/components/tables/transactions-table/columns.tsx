@@ -17,6 +17,18 @@ export const columns: ColumnDef<TransactionData>[] = [
     header: 'Date'
   },
   {
+    accessorKey: 'type',
+    header: 'Type',
+    cell: ({ row }) => {
+      const type = row.getValue('type') as string
+      return (
+        <span className={type === 'expense' ? 'text-red-600 font-medium' : 'text-green-600 font-medium'}>
+          {type.charAt(0).toUpperCase() + type.slice(1)}
+        </span>
+      )
+    }
+  },
+  {
     accessorKey: 'description',
     header: 'Description',
   },
@@ -26,6 +38,14 @@ export const columns: ColumnDef<TransactionData>[] = [
   },
   {
     accessorKey: 'amount',
-    header: 'Amount'
+    header: 'Amount',
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("amount"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount)
+      return <span className="font-medium">{formatted}</span>
+    }
   }
 ]

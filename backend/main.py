@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from app.routes.user_routes import router as user_router
 from app.routes.transaction_routes import router as transaction_router
+from app.routes.category_routes import router as category_router
 from contextlib import asynccontextmanager
 
 @asynccontextmanager
@@ -32,6 +33,8 @@ app.include_router(user_router, prefix="/api", tags=["users"])
 # Include transaction routes
 app.include_router(transaction_router, prefix="/api", tags=["transactions"])
 
+# Include category routes
+app.include_router(category_router, prefix="/api", tags=["categories"])
 
 
 @app.get("/")
@@ -46,4 +49,3 @@ async def test_db():
         return {"status": "success", "message": "Successfully connected to MongoDB!"}
     except Exception as e:
         return {"status": "error", "message": f"Failed to connect to MongoDB: {str(e)}"}
-
