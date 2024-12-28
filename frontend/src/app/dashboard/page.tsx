@@ -5,24 +5,18 @@ import AddTransDialog from "@/components/AddTransDialog"
 import { DataTable } from "./components/tables/transactions-table/transactions-table"
 import { columns } from "./components/tables/transactions-table/columns"
 import { TransactionData } from "./types/table-types"
+import { transactionService } from "@/services/transactionService"
+import { auth } from "../../../auth"
 
-async function getData(): Promise<TransactionData[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "728ed52f",
-      date: "2023-06-01",
-      amount: 100,
-      description: "pending",
-      category: "test"
-    }
-    // ...
-  ]
-}
+
+
+
 
 export default async function DashboardPage() {
 
-  const data = await getData();
+  const session = await auth();
+
+  const transactions = await transactionService.getTransactions(session?.user?.id!);
 
   return (
     <div className="p-6 space-y-6">
@@ -79,7 +73,7 @@ export default async function DashboardPage() {
             <CardTitle>Recent Transactions</CardTitle>
           </CardHeader>
           <CardContent>
-          <DataTable columns={columns} data={data} />
+          <DataTable columns={columns} data={transactions.transactions} />
           </CardContent>
         </Card>
         

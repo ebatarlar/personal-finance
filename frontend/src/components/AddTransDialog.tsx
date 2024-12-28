@@ -25,7 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
+import { useSession } from "next-auth/react"
+import { Session } from "next-auth"
+import { transactionService } from "@/services/transactionService";
 
 const AddTransDialog = () => {
   
@@ -34,39 +36,45 @@ const AddTransDialog = () => {
   const [date, setDate]               = useState<Date>()
   const [open, setOpen]               = useState(false)
   const [transactionType, setTransactionType] = useState<string>("")
+  const { data: session } = useSession()
   const { toast }                     = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const response = await fetch("http://localhost:8000/api/transactions/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          date,
-          amount: parseFloat(amount),
-          description,
-          type: transactionType
-        }),
-      })
 
-      if (response.ok) {
-        // Clear form and close dialog
-        setAmount("");
-        setDescription("");
-        setOpen(false);
-        toast({
-          title: "Success",
-          description: "Transaction has been created successfully",
-        });
-      } else {
-        console.error("Failed to create transaction")
-      }
-    } catch (error) {
-      console.error("Error creating transaction:", error)
+
+    const transactionData = {
+      user_id: session?.user.id,
+      type: transactionType === 'expense' ? 0 : 1,
+      categories: ["Uncategorized"],
+      amount: typeof amount === 'number' ? amount : parseFloat(amount),
+      date: date ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+      description: description || "",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
+
+    const response = await transactionService.createTransaction(transactionData)
+
+
+    if(!response) {
+      toast({
+        title: "Error",
+        description: "Failed to create transaction",
+      });
+      return
+    }else {
+      // Clear form and close dialog
+      setAmount("");
+      setDescription("");
+      setOpen(false);
+      toast({
+        title: "Success",
+        description: "Transaction has been created successfully",
+      });
+    }
+
+    
   }
 
   return (

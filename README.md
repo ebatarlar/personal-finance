@@ -12,12 +12,17 @@ The backend directory contains the server-side code and services for the applica
 - `.env`: Environment variables for the backend.
 - `app/`: Contains the main application logic.
   - `core/`: Core functionalities and utilities.
+    - `database.py`: Database connection and configuration.
   - `models/`: Database models.
+    - `user.py`: User data model.
+    - `transaction.py`: Transaction data model.
   - `routes/`: Defines the API routes for handling requests.
     - `user_routes.py`: Handles user-related API requests.
+    - `transaction_routes.py`: Handles transaction-related API requests.
   - `schemas/`: Data validation schemas.
   - `services/`: Contains business logic and services used by the routes.
     - `user_service.py`: Logic related to user operations.
+    - `transaction_service.py`: Logic related to transaction operations.
 - `main.py`: The entry point for the backend application.
 - `requirements.txt`: Python dependencies.
 - `test_db_connection.py`: Script to test database connections.
@@ -35,14 +40,16 @@ backend/
 │   │   └── database.py
 │   ├── models/
 │   │   ├── __pycache__/
+│   │   ├── transaction.py
 │   │   └── user.py
-│   ├── routers/
 │   ├── routes/
 │   │   ├── __pycache__/
+│   │   ├── transaction_routes.py
 │   │   └── user_routes.py
 │   ├── schemas/
 │   └── services/
 │       ├── __pycache__/
+│       ├── transaction_service.py
 │       └── user_service.py
 ├── main.py
 ├── requirements.txt
@@ -133,7 +140,8 @@ frontend/
 │   ├── lib/
 │   │   └── utils.ts
 │   └── services/
-│       └── userService.ts
+│       ├── userService.ts
+|       └── transactionService.ts
 └── types/
     └── next-auth.d.ts
 ```

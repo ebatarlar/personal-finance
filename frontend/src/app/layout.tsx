@@ -1,6 +1,9 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
+import { Providers } from "@/components/providers"
+
 import "./globals.css"
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,15 +21,19 @@ export const metadata: Metadata = {
   description: "Manage your personal finances",
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  
+  
   return (
     <html lang="en" className={`${geistSans.variable} font-geist-sans`}>
       <body>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )

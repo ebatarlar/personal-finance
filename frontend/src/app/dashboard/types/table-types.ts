@@ -2,6 +2,7 @@
 // Define your common table interfaces and types here
 // Examples: TableColumn, SortingState, PaginationState, etc.
 
+
 // Common interfaces and types for table components
 
 
@@ -11,6 +12,7 @@ export interface TransactionData {
   date: string;
   description: string;
   amount: number;
+  type: string;
   category: string;
 }
 
