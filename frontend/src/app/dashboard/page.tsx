@@ -18,7 +18,6 @@ export default async function DashboardPage() {
 
   const transactions = await transactionService.getTransactions(session?.user?.id!);
 
-  console.log(transactions);
 
   return (
     <div className="p-6 space-y-6">

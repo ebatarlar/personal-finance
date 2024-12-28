@@ -13,7 +13,7 @@ export interface TransactionData {
   description: string;
   amount: number;
   type: string;
-  category: string;
+  categories: string[];
 }
 
 export interface CategoryData {

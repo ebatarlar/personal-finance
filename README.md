@@ -82,6 +82,9 @@ The frontend directory contains the client-side code for the application. The ke
   - `hooks/`: Custom React hooks.
   - `lib/`: Utility functions.
   - `services/`: Services for handling API requests and business logic.
+    - `userService.ts`: Service for interacting with user-related API endpoints.
+    - `transactionService.ts`: Service for interacting with transaction-related API endpoints.
+    - `categoryService.ts`: Service for interacting with category-related API endpoints.
   - `types/`: TypeScript type definitions.
 - `tailwind.config.ts`: Tailwind CSS configuration.
 - `tsconfig.json`: TypeScript configuration.
@@ -148,7 +151,8 @@ frontend/
 │   │   └── utils.ts
 │   └── services/
 │       ├── userService.ts
-|       └── transactionService.ts
+│       ├── transactionService.ts
+│       └── categoryService.ts
 └── types/
     └── next-auth.d.ts
 ```

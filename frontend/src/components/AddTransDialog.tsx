@@ -12,12 +12,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from 'date-fns';
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -28,6 +29,13 @@ import {
 import { useSession } from "next-auth/react"
 import { Session } from "next-auth"
 import { transactionService } from "@/services/transactionService";
+import { categoryService } from "@/services/categoryService";
+
+interface Category {
+  type: 'expense' | 'income';
+  name: string;
+  is_default: boolean;
+}
 
 const AddTransDialog = () => {
   
@@ -36,17 +44,60 @@ const AddTransDialog = () => {
   const [date, setDate]               = useState<Date>()
   const [open, setOpen]               = useState(false)
   const [transactionType, setTransactionType] = useState<string>("")
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const { data: session } = useSession()
   const { toast }                     = useToast()
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (session?.user?.id) {
+        try {
+          const allCategories = await categoryService.getAllCategories(session.user.id);
+          setCategories(allCategories);
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch categories",
+          });
+        }
+      }
+    };
+
+    if (open) {
+      fetchCategories();
+    }
+  }, [open, session?.user?.id]);
+
+  const filteredCategories = categories.filter(
+    category => category.type === transactionType
+  );
+
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCategories(prev => [...prev, category]);
+    } else {
+      setSelectedCategories(prev => prev.filter(c => c !== category));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (selectedCategories.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one category",
+        variant: "destructive"
+      });
+      return;
+    }
 
     const transactionData = {
       user_id: session?.user.id,
       type: transactionType,
-      categories: ["Uncategorized"],
+      categories: selectedCategories,
       amount: typeof amount === 'number' ? amount : parseFloat(amount),
       date: date ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
       description: description || "",
@@ -55,7 +106,6 @@ const AddTransDialog = () => {
     }
 
     const response = await transactionService.createTransaction(transactionData)
-
 
     if(!response) {
       toast({
@@ -67,14 +117,13 @@ const AddTransDialog = () => {
       // Clear form and close dialog
       setAmount("");
       setDescription("");
+      setSelectedCategories([]);
       setOpen(false);
       toast({
         title: "Success",
         description: "Transaction has been created successfully",
       });
     }
-
-    
   }
 
   return (
@@ -120,7 +169,13 @@ const AddTransDialog = () => {
               <Label htmlFor="amount" className="text-right">
                 Type
               </Label>
-              <Select onValueChange={setTransactionType} value={transactionType}>
+              <Select 
+                onValueChange={(value) => {
+                  setTransactionType(value);
+                  setSelectedCategories([]); // Reset categories when type changes
+                }} 
+                value={transactionType}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
@@ -129,7 +184,41 @@ const AddTransDialog = () => {
                   <SelectItem value="income">Income</SelectItem>
                 </SelectContent>
               </Select>
-
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="category" className="text-right">
+                Categories
+              </Label>
+              <div className="col-span-3 flex flex-col gap-2">
+                {filteredCategories.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    {transactionType 
+                      ? "No categories available for this type" 
+                      : "Select a transaction type to filter categories"}
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    {filteredCategories.map((category) => (
+                      <div key={category.name} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={category.name}
+                          checked={selectedCategories.includes(category.name)}
+                          onCheckedChange={(checked) => 
+                            handleCategoryChange(category.name, checked as boolean)
+                          }
+                          disabled={!transactionType}
+                        />
+                        <label
+                          htmlFor={category.name}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {category.name}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="amount" className="text-right">

@@ -33,8 +33,23 @@ export const columns: ColumnDef<TransactionData>[] = [
     header: 'Description',
   },
   {
-    accessorKey: 'category',
-    header: 'Category',
+    accessorKey: 'categories',
+    header: 'Categories',
+    cell: ({ row }) => {
+      const categories = row.getValue('categories') as string[]
+      return (
+        <div className="flex flex-wrap gap-1">
+          {categories.map((category, index) => (
+            <span 
+              key={index} 
+              className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-secondary"
+            >
+              {category}
+            </span>
+          ))}
+        </div>
+      )
+    }
   },
   {
     accessorKey: 'amount',
