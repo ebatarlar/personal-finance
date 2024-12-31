@@ -10,15 +10,18 @@ This project is organized into two main parts: the backend and the frontend.
 
 The backend directory contains the server-side code and services for the application. The key components include:
 - `.env`: Environment variables for the backend.
+  - `MONGODB_URL`: MongoDB connection string
+  - `JWT_SECRET_KEY`: Secret key for JWT token generation
 - `app/`: Contains the main application logic.
   - `core/`: Core functionalities and utilities.
     - `database.py`: Database connection and configuration.
+    - `security.py`: JWT token generation and password hashing.
   - `models/`: Database models.
     - `user.py`: User data model.
     - `transaction.py`: Transaction data model.
     - `category.py`: Category data model.
   - `routes/`: Defines the API routes for handling requests.
-    - `user_routes.py`: Handles user-related API requests.
+    - `user_routes.py`: Handles user-related API requests and authentication.
     - `transaction_routes.py`: Handles transaction-related API requests.
     - `category_routes.py`: Handles category-related API requests.
   - `schemas/`: Data validation schemas.
@@ -42,6 +45,8 @@ backend/
 │   ├── core/
 │   │   ├── __pycache__/
 │   │   └── database.py
+│   │   └──security.py
+
 │   ├── models/
 │   │   ├── __pycache__/
 │   │   ├── category.py
@@ -156,7 +161,6 @@ frontend/
 └── types/
     └── next-auth.d.ts
 ```
-
 
 ## Features
 
