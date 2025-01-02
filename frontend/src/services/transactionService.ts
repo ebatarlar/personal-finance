@@ -4,6 +4,7 @@ export const transactionService = {
     async getTransactions(userId: string) {
         try {
             const accessToken = await authService.getAccessToken();
+            
             if (!accessToken) {
                 throw new Error('No access token available');
             }
@@ -16,10 +17,16 @@ export const transactionService = {
 
             if (response.status === 401) {
                 // Token might be expired, try to refresh
-                const refreshed = await authService.refreshAccessToken();
+                const refreshToken = await authService.getRefreshToken();
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+                const refreshed = await authService.refreshAccessToken(refreshToken);
+               
                 if (refreshed) {
                     // Retry with new token
                     const newToken = await authService.getAccessToken();
+                    console.log(newToken);
                     const retryResponse = await fetch(`http://localhost:8000/api/transactions/user/${userId}`, {
                         headers: {
                             'Authorization': `Bearer ${newToken}`,
@@ -62,7 +69,11 @@ export const transactionService = {
 
             if (response.status === 401) {
                 // Token might be expired, try to refresh
-                const refreshed = await authService.refreshAccessToken();
+                const refreshToken = await authService.getRefreshToken();
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+                const refreshed = await authService.refreshAccessToken(refreshToken);
                 if (refreshed) {
                     // Retry with new token
                     const newToken = await authService.getAccessToken();

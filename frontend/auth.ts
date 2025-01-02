@@ -2,12 +2,33 @@ import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github"
 import { userService } from "@/services/userService"
 import { authService } from "@/services/authService";
+import { Session } from "next-auth";
+import { JWT } from "next-auth/jwt"
+
+// Extend the JWT type to include our custom properties
+declare module "next-auth/jwt" {
+  interface JWT {
+    error?: string;
+    access_token?: string;
+    refresh_token?: string;
+    expires_at?: number;
+  }
+}
+
+// Extend the Session type to include our custom properties
+declare module "next-auth" {
+  interface Session {
+    error?: string;
+    tokens?: {
+      access_token: string;
+      refresh_token: string;
+    } | null;
+  }
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [GitHub],
   callbacks: {
-    
-
     async signIn({ user, account }) {
       if (account?.provider === "github") {
         try {
@@ -22,7 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           });
          
-          //console.log("User stored in MongoDB:", user);
+         
 
           // login
           const tokenData = await userService.loginByOAuth({
@@ -49,39 +70,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async jwt({ token, user }) {
       
-      // Initial sign in
       if (user) {
-        // Pass the tokens from user to the token
-        token.access_token = (user as any).access_token as string;
-        token.refresh_token = (user as any).refresh_token as string;
+        return {
+          ...token,
+          ...user,
+          expires_at: Math.floor(Date.now() / 1000 + 15 * 60), // 15 minutes from now
+        };
+      }
+
+      // Return previous token if the access token has not expired yet
+      if (typeof token.expires_at === 'number' && Date.now() < token.expires_at * 1000) {
         return token;
       }
 
-      // Return previous token if it's not expired
-      if (Date.now() < ((token as any).expires_at ?? 0) * 1000) {
-        return token;
-      }
-
-      // Token has expired, try to refresh it
+      // Access token has expired, try to refresh it
       try {
-        const response = await fetch('http://localhost:8000/api/token/refresh', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ refresh_token: token.refresh_token }),
-        });
+        if (!token.refresh_token) {
+          return { ...token, error: "NoRefreshTokenError" };
+        }
 
-        if (!response.ok) {
+        const tokens = await authService.refreshAccessToken(token.refresh_token);
+        if (!tokens) {
           return { ...token, error: "RefreshAccessTokenError" };
         }
 
-        const tokens = await response.json();
         return {
           ...token,
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
-          expires_at: Math.floor(Date.now() / 1000 + 15 * 60), // 15 minutes from now
+          expires_at: tokens.expires_at,
         };
       } catch (error) {
         console.error("Error refreshing access token:", error);
@@ -89,8 +106,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
     async session({ session, token }) {
-      
-
       // Add user data from MongoDB to the session
       if (session.user?.email) {
         try {
@@ -104,13 +119,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       // Add tokens to the session
-      if (token.access_token && token.refresh_token) {
+      if (token.error) {
+        // If there was an error refreshing the access token
+        session.error = token.error;
+        session.tokens = null;
+      } else if (token.access_token && token.refresh_token) {
         session.tokens = {
           access_token: token.access_token as string,
           refresh_token: token.refresh_token as string,
         };
+        session.error = undefined;
       } else {
         session.tokens = null;
+        session.error = undefined;
       }
 
       return session;

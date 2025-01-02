@@ -5,6 +5,7 @@ interface Token {
     access_token: string;
     refresh_token: string;
     token_type: string;
+    expires_at?: number;
 }
 
 export const authService = {
@@ -30,12 +31,11 @@ export const authService = {
         return session?.tokens?.refresh_token || null;
     },
 
-    async refreshAccessToken(): Promise<boolean> {
-        const refreshToken = await this.getRefreshToken();
-        if (!refreshToken) return false;
+    async refreshAccessToken(refreshToken: string): Promise<Token | null> {
+        if (!refreshToken) return null;
 
         try {
-            const response = await fetch('http://localhost:8000/api/users/refresh', {
+            const response = await fetch('http://localhost:8000/api/token/refresh', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -44,17 +44,16 @@ export const authService = {
             });
 
             if (!response.ok) {
-                return false;
+                console.error('Token refresh failed:', response.status);
+                return null;
             }
 
             const tokens: Token = await response.json();
-            
-            // Instead of setting cookies, we'll update the NextAuth session
-            // The tokens will be automatically updated in the session through the jwt callback
-            return true;
+            tokens.expires_at = Math.floor(Date.now() / 1000 + 15 * 60); // 15 minutes from now
+            return tokens;
         } catch (error) {
             console.error('Error refreshing token:', error);
-            return false;
+            return null;
         }
     }
 };
