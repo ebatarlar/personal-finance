@@ -71,26 +71,36 @@ backend/
 
 ### Frontend
 
-The frontend directory contains the client-side code for the application. The key components include:
+The frontend directory contains the client-side code for the application built with Next.js, TypeScript, and Tailwind CSS, using shadcn/ui for components. The key components include:
 - `.env.local`: Local environment variables for the frontend.
 - `.eslintrc.json`: ESLint configuration.
 - `.next/`: Next.js build output.
-- `auth.ts`: Authentication logic.
-- `components.json`: Component configurations.
+- `auth.ts`: Authentication logic using NextAuth.js.
+- `components.json`: shadcn/ui component configurations.
 - `next-env.d.ts`: TypeScript environment declarations.
 - `next.config.ts`: Next.js configuration.
 - `node_modules/`: Installed Node.js modules.
 - `public/`: Static files.
 - `src/`: Contains the source code for the frontend application.
-  - `app/`: Main application components.
+  - `app/`: Main application components and routing.
   - `components/`: Reusable UI components.
+    - `AddTransDialog.tsx`: Transaction creation dialog.
+    - `app-sidebar.tsx`: Application sidebar navigation.
+    - `login/`: Authentication-related components.
+    - `providers.tsx`: React context providers.
+    - `ui/`: shadcn/ui components (button, dialog, form, etc.).
   - `hooks/`: Custom React hooks.
+    - `use-mobile.tsx`: Mobile device detection hook.
+    - `use-toast.ts`: Toast notification hook.
   - `lib/`: Utility functions.
-  - `services/`: Services for handling API requests and business logic.
-    - `userService.ts`: Service for interacting with user-related API endpoints.
-    - `transactionService.ts`: Service for interacting with transaction-related API endpoints.
-    - `categoryService.ts`: Service for interacting with category-related API endpoints.
+    - `utils.ts`: Common utility functions.
+  - `services/`: Services for handling API requests.
+    - `userService.ts`: User authentication and management.
+    - `transactionService.ts`: Transaction operations.
+    - `categoryService.ts`: Category management.
+    - `authService.ts`: Authentication utilities.
   - `types/`: TypeScript type definitions.
+    - `next-auth.d.ts`: NextAuth type declarations.
 - `tailwind.config.ts`: Tailwind CSS configuration.
 - `tsconfig.json`: TypeScript configuration.
 
@@ -127,6 +137,7 @@ frontend/
 │   ├── components/
 │   │   ├── AddTransDialog.tsx
 │   │   ├── app-sidebar.tsx
+│   │   ├── providers.tsx
 │   │   ├── login/
 │   │   │   ├── auth-buttons-github.tsx
 │   │   │   └── login-form.tsx
@@ -154,12 +165,14 @@ frontend/
 │   │   └── use-toast.ts
 │   ├── lib/
 │   │   └── utils.ts
-│   └── services/
-│       ├── userService.ts
-│       ├── transactionService.ts
-│       └── categoryService.ts
-└── types/
-    └── next-auth.d.ts
+│   ├── services/
+│   │   ├── authService.ts
+│   │   ├── userService.ts
+│   │   ├── transactionService.ts
+│   │   └── categoryService.ts
+│   └── types/
+│       └── next-auth.d.ts
+└── tailwind.config.ts
 ```
 
 ## Features

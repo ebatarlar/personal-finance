@@ -7,6 +7,7 @@ import { columns } from "./components/tables/transactions-table/columns"
 import { TransactionData } from "./types/table-types"
 import { transactionService } from "@/services/transactionService"
 import { auth } from "../../../auth"
+import { authService } from "@/services/authService"
 
 
 
@@ -16,8 +17,13 @@ export default async function DashboardPage() {
 
   const session = await auth();
 
-  const transactions = await transactionService.getTransactions(session?.user?.id!);
+  // Set cookies on the server side
+  const headers = new Headers();
+  headers.append('Set-Cookie', `access_token=sdvbsd; Path=/`);
+  headers.append('Set-Cookie', `refresh_token=sdvsdv; Path=/`);
 
+  const transactions = await transactionService.getTransactions(session?.user?.id!);
+  
 
   return (
     <div className="p-6 space-y-6">
@@ -74,7 +80,7 @@ export default async function DashboardPage() {
             <CardTitle>Recent Transactions</CardTitle>
           </CardHeader>
           <CardContent>
-          <DataTable columns={columns} data={transactions.transactions} />
+          <DataTable columns={columns} data={transactions} />
           </CardContent>
         </Card>
         

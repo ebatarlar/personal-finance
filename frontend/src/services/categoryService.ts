@@ -1,3 +1,5 @@
+import { authService } from "./authService";
+
 interface Category {
     type: 'expense' | 'income';
     name: string;
@@ -38,7 +40,15 @@ export const categoryService = {
 
     async getAllCategories(userId: string) {
         try {
-            const response = await fetch(`http://localhost:8000/api/categories/${userId}`);
+            const accessToken = await authService.getAccessToken();
+            if (!accessToken) {
+                throw new Error('No access token available');
+            }
+            const response = await fetch(`http://localhost:8000/api/categories/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch categories');
             }
