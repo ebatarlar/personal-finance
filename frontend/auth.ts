@@ -27,6 +27,7 @@ declare module "next-auth" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  debug: true,
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID,
@@ -38,6 +39,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     })
   ],
+  pages: {
+    error: '/auth/error',
+    signIn: '/auth/signin',
+  },
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "github") {
