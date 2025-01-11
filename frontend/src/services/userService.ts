@@ -1,3 +1,5 @@
+import { getApiUrl } from '@/config/api';
+
 interface User {
   email: string;
   name: string;
@@ -17,7 +19,7 @@ interface OauthInfo {
 export const userService = {
   async createOrUpdateUser(userData: User) {
     try {
-      const response = await fetch('http://localhost:8000/api/users/create', {
+      const response = await fetch(getApiUrl('/api/users/create'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,12 +38,12 @@ export const userService = {
     }
   },
 
-  async loginByOAuth(userData: User , oauthInfo: OauthInfo) {
-    const requestBody = { oauth_info: oauthInfo , user_data:userData,  };
+  async loginByOAuth(userData: User, oauthInfo: OauthInfo) {
+    const requestBody = { oauth_info: oauthInfo, user_data: userData };
     console.log('loginByOAuth request body:', requestBody);
 
     try {
-      const response = await fetch('http://localhost:8000/api/users/oauth', {
+      const response = await fetch(getApiUrl('/api/users/oauth'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,21 +52,20 @@ export const userService = {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to login by OAuth');
+        throw new Error('Failed to login with OAuth');
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error logging in by OAuth:', error);
+      console.error('Error logging in with OAuth:', error);
       throw error;
     }
-
   },
 
   async getUserByEmail(email: string) {
     try {
-      const response = await fetch(`http://localhost:8000/api/users/email/${email}`);
-      
+      const response = await fetch(getApiUrl(`/api/users/email/${email}`));
+
       if (!response.ok) {
         if (response.status === 404) {
           return null;
@@ -77,5 +78,5 @@ export const userService = {
       console.error('Error fetching user:', error);
       throw error;
     }
-  },
+  }
 };

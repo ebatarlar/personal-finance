@@ -1,5 +1,6 @@
 import { getSession } from 'next-auth/react';
 import { auth } from '@/auth';
+import { getApiUrl } from '@/config/api';
 
 interface Token {
     access_token: string;
@@ -35,7 +36,7 @@ export const authService = {
         if (!refreshToken) return null;
 
         try {
-            const response = await fetch('http://localhost:8000/api/token/refresh', {
+            const response = await fetch(getApiUrl('/api/token/refresh'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +50,6 @@ export const authService = {
             }
 
             const tokens: Token = await response.json();
-            tokens.expires_at = Math.floor(Date.now() / 1000 + 15 * 60); // 15 minutes from now
             return tokens;
         } catch (error) {
             console.error('Error refreshing token:', error);

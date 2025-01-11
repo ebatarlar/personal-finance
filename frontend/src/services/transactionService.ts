@@ -1,4 +1,5 @@
 import { authService } from './authService';
+import { getApiUrl } from '@/config/api';
 
 export const transactionService = {
     async getTransactions(userId: string) {
@@ -9,7 +10,7 @@ export const transactionService = {
                 throw new Error('No access token available');
             }
 
-            const response = await fetch(`http://localhost:8000/api/transactions/user/${userId}`, {
+            const response = await fetch(getApiUrl(`/api/transactions/user/${userId}`), {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -27,7 +28,7 @@ export const transactionService = {
                     // Retry with new token
                     const newToken = await authService.getAccessToken();
                     console.log(newToken);
-                    const retryResponse = await fetch(`http://localhost:8000/api/transactions/user/${userId}`, {
+                    const retryResponse = await fetch(getApiUrl(`/api/transactions/user/${userId}`), {
                         headers: {
                             'Authorization': `Bearer ${newToken}`,
                         },
@@ -58,7 +59,7 @@ export const transactionService = {
                 throw new Error('No access token available');
             }
 
-            const response = await fetch('http://localhost:8000/api/transactions/create', {
+            const response = await fetch(getApiUrl('/api/transactions/create'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,7 +78,7 @@ export const transactionService = {
                 if (refreshed) {
                     // Retry with new token
                     const newToken = await authService.getAccessToken();
-                    const retryResponse = await fetch('http://localhost:8000/api/transactions', {
+                    const retryResponse = await fetch(getApiUrl('/api/transactions/create'), {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

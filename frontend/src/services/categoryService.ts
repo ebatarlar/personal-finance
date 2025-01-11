@@ -1,4 +1,5 @@
 import { authService } from "./authService";
+import { getApiUrl } from '@/config/api';
 
 interface Category {
     type: 'expense' | 'income';
@@ -14,7 +15,7 @@ interface CreateCategoryData {
 export const categoryService = {
     async getDefaultCategories() {
         try {
-            const response = await fetch('http://localhost:8000/api/categories/default');
+            const response = await fetch(getApiUrl('/api/categories/default'));
             if (!response.ok) {
                 throw new Error('Failed to fetch default categories');
             }
@@ -27,7 +28,7 @@ export const categoryService = {
 
     async getCustomCategories(userId: string) {
         try {
-            const response = await fetch(`http://localhost:8000/api/categories/custom/${userId}`);
+            const response = await fetch(getApiUrl(`/api/categories/custom/${userId}`));
             if (!response.ok) {
                 throw new Error('Failed to fetch custom categories');
             }
@@ -44,7 +45,7 @@ export const categoryService = {
             if (!accessToken) {
                 throw new Error('No access token available');
             }
-            const response = await fetch(`http://localhost:8000/api/categories/${userId}`, {
+            const response = await fetch(getApiUrl(`/api/categories/${userId}`), {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -61,7 +62,7 @@ export const categoryService = {
 
     async createCustomCategory(userId: string, categoryData: CreateCategoryData) {
         try {
-            const response = await fetch(`http://localhost:8000/api/categories/custom/${userId}`, {
+            const response = await fetch(getApiUrl(`/api/categories/custom/${userId}`), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +81,7 @@ export const categoryService = {
 
     async deleteCustomCategory(userId: string, categoryName: string) {
         try {
-            const response = await fetch(`http://localhost:8000/api/categories/custom/${userId}/${categoryName}`, {
+            const response = await fetch(getApiUrl(`/api/categories/custom/${userId}/${categoryName}`), {
                 method: 'DELETE',
             });
             if (!response.ok) {
