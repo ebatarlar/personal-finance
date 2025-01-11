@@ -27,22 +27,7 @@ declare module "next-auth" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: true,
-  providers: [
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-      authorization: {
-        params: {
-          redirect_uri: process.env.NEXTAUTH_URL ? `${process.env.NEXTAUTH_URL}/api/auth/callback/github` : undefined
-        }
-      }
-    })
-  ],
-  pages: {
-    error: '/auth/error',
-    signIn: '/auth/signin',
-  },
+  providers: [GitHub],
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "github") {
@@ -58,6 +43,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           });
          
+         
+
           // login
           const tokenData = await userService.loginByOAuth({
             email: user.email!,
