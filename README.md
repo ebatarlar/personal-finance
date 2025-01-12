@@ -2,6 +2,45 @@
 
 A comprehensive full-stack application designed to help users manage their personal finances effectively. Built with Next.js for the frontend and Python for the backend, the app offers a seamless experience for tracking expenses, managing income, and planning budgets.
 
+## Deployment
+
+### Backend (Google Cloud Run)
+The backend is deployed on Google Cloud Run, providing a scalable and serverless environment.
+
+- **Production URL**: `https://personal-finance-backend-315388459026.europe-west1.run.app`
+- **Deployment Stack**:
+  - Python 3.11
+  - FastAPI
+  - MongoDB
+  - Docker
+
+### Frontend (Vercel)
+The frontend is deployed on Vercel, offering automatic deployments and serverless functions.
+
+- **Production URL**: `https://frontend-iota-ruby.vercel.app`
+- **Deployment Stack**:
+  - Next.js 14
+  - TypeScript
+  - Tailwind CSS
+  - shadcn/ui
+
+### Environment Variables
+
+#### Backend (.env)
+```
+MONGODB_URL=your_mongodb_connection_string
+JWT_SECRET_KEY=your_jwt_secret
+```
+
+#### Frontend (.env.local)
+```
+NEXT_PUBLIC_API_URL=https://personal-finance-backend-315388459026.europe-west1.run.app
+NEXTAUTH_URL=https://frontend-iota-ruby.vercel.app
+AUTH_GITHUB_ID=your_github_oauth_client_id
+AUTH_GITHUB_SECRET=your_github_oauth_client_secret
+NEXTAUTH_SECRET=your_nextauth_secret
+```
+
 ## Project Structure
 
 This project is organized into two main parts: the backend and the frontend.
