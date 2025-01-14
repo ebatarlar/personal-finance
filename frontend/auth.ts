@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github"
+import Credentials from "next-auth/providers/credentials"
 import { userService } from "@/services/userService"
 import { authService } from "@/services/authService";
 import { Session } from "next-auth";
@@ -27,12 +28,57 @@ declare module "next-auth" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [GitHub],
+  providers: [
+    GitHub,
+    Credentials({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Missing credentials");
+          }
+
+          const tokens = await authService.login({
+            email: credentials.email as string,
+            password: credentials.password as string,
+          });
+
+          if (tokens) {
+            // Get user data after successful login
+            const user = await userService.getUserByEmail(credentials.email as string);
+            
+            if (!user) {
+              throw new Error("User not found");
+            }
+
+            // Return user object with tokens
+
+            return {
+              ...user,
+              access_token: tokens.access_token,   
+              refresh_token: tokens.refresh_token   
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error("Authentication error:", error);
+          return null;
+        }
+      }
+    })
+  ],
   callbacks: {
     async signIn({ user, account }) {
+      if (account?.provider === "credentials") {
+        return !!user;
+      }
+
       if (account?.provider === "github") {
         try {
-
           if (!user.email || !user.id) {
             throw new Error('Missing required user data');
           }
@@ -47,8 +93,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               provider_user_id: user.id
             }
           });
-         
-         
 
           // login
           const tokenData = await userService.oauthLogin({
@@ -74,7 +118,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async jwt({ token, user }) {
-      
       if (user) {
         return {
           ...token,

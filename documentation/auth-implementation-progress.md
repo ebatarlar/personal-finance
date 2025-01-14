@@ -40,8 +40,8 @@ We have implemented a comprehensive authentication system in `auth_routes.py` wi
 
 ### Phase 2: Frontend Updates 
 1. Update API Client:
-   - [ ] Update endpoint URLs in auth API calls
-   - [ ] Add new auth endpoint methods
+   - [x] Update endpoint URLs in auth API calls
+   - [x] Add new auth endpoint methods
 
 2. Update Auth Flow:
    - [ ] Implement email verification UI

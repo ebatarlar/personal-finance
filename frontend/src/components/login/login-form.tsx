@@ -31,14 +31,13 @@ export function LoginForm() {
     
     try {
       const result = await signIn("credentials", {
-        username: formData.get("email"),
+        email: formData.get("email"),
         password: formData.get("password"),
         redirect: false,
       })
 
-      console.log('Sign in result:', result)
 
-      if (!result?.ok) {
+      if (result?.error) {
         toast({
           variant: "destructive",
           title: "Login failed",
