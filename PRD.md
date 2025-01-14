@@ -15,10 +15,15 @@ Many individuals struggle with managing their personal finances effectively, lac
 ## Core Features
 
 ### 1. User Authentication & Authorization
-- Secure user registration and login
-- JWT-based authentication
-- Role-based access control
-- Password recovery functionality
+- Secure user registration and login with Argon2 password hashing
+- JWT-based authentication with access and refresh tokens
+- OAuth support for third-party authentication
+- Password recovery and email verification system
+- Advanced rate limiting for security:
+  - Aggressive limits (3 req/min) for sensitive endpoints (login, register)
+  - Normal limits (10 req/min) for authenticated endpoints
+  - IP-based rate limiting with detailed response headers
+- Session management with token refresh and logout
 
 ### 2. Financial Records Management
 - Add, edit, and delete financial records
@@ -66,9 +71,13 @@ Many individuals struggle with managing their personal finances effectively, lac
 
 ### Security Requirements
 - Encrypted data transmission (HTTPS)
-- Secure password hashing
-- Input validation and sanitization
-- Rate limiting
+- Secure password hashing using Argon2
+- JWT-based authentication with refresh tokens
+- Advanced rate limiting and brute force protection:
+  - IP-based rate limiting
+  - Endpoint-specific rate limits
+  - Rate limit headers (X-RateLimit-*)
+- Input validation and sanitization using Pydantic v2
 - CORS configuration
 - Security headers implementation
 
@@ -134,20 +143,22 @@ The backend directory contains the server-side code and services for the applica
   - `core/`: Core functionalities and utilities.
     - `database.py`: Database connection and configuration.
     - `security.py`: JWT token generation and password hashing.
+    - `rate_limit.py`: Rate limiting and brute force protection.
   - `models/`: Database models.
-    - `user.py`: User data model.
-    - `transaction.py`: Transaction data model.
-    - `category.py`: Category data model.
+    - `user.py`: User data model and Pydantic schemas.
+    - `transaction.py`: Transaction data model and schemas.
+    - `category.py`: Category data model and schemas.
+    
   - `routes/`: Defines the API routes for handling requests.
-    - `user_routes.py`: Handles user-related API requests and authentication.
-    - `transaction_routes.py`: Handles transaction-related API requests.
-    - `category_routes.py`: Handles category-related API requests.
-  - `schemas/`: Data validation schemas.
-    - `category.py`: Category data validation schemas.
-  - `services/`: Contains business logic and services used by the routes.
-    - `user_service.py`: Logic related to user operations.
-    - `transaction_service.py`: Logic related to transaction operations.
-    - `category_service.py`: Logic related to category operations.
+    - `auth_routes.py`: Authentication and authorization endpoints.
+    - `user_routes.py`: User profile and management endpoints.
+    - `transaction_routes.py`: Transaction-related endpoints.
+    - `category_routes.py`: Category management endpoints.
+  - `services/`: Contains business logic and services.
+    - `auth_service.py`: Authentication and authorization logic.
+    - `user_service.py`: User management operations.
+    - `transaction_service.py`: Transaction operations.
+    - `category_service.py`: Category operations.
 - `main.py`: The entry point for the backend application.
 - `requirements.txt`: Python dependencies.
 - `test_db_connection.py`: Script to test database connections.
@@ -162,9 +173,9 @@ backend/
 ├── app/
 │   ├── core/
 │   │   ├── __pycache__/
-│   │   └── database.py
-│   │   └──security.py
-
+│   │   ├── database.py
+│   │   ├── security.py
+│   │   └── rate_limit.py
 │   ├── models/
 │   │   ├── __pycache__/
 │   │   ├── category.py
@@ -172,15 +183,16 @@ backend/
 │   │   └── user.py
 │   ├── routes/
 │   │   ├── __pycache__/
+│   │   ├── auth_routes.py
+│   │   ├── user_routes.py
 │   │   ├── category_routes.py
-│   │   ├── transaction_routes.py
-│   │   └── user_routes.py
-│   ├── schemas/
-│   └── services/
-│       ├── __pycache__/
-│       ├── category_service.py
-│       ├── transaction_service.py
-│       └── user_service.py
+│   │   └── transaction_routes.py
+│   ├── services/
+│   │   ├── __pycache__/
+│   │   ├── auth_service.py
+│   │   ├── user_service.py
+│   │   ├── category_service.py
+│   │   ├── transaction_service.py
 ├── main.py
 ├── requirements.txt
 ├── test_db_connection.py

@@ -32,9 +32,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === "github") {
         try {
+
+          if (!user.email || !user.id) {
+            throw new Error('Missing required user data');
+          }
+
           // Store user in MongoDB
-          await userService.createOrUpdateUser({
-            email: user.email!,
+          await userService.register({
+            email: user.email,
             name: user.name?.split(" ")[0] ?? "",
             surname: user.name?.split(" ").slice(1).join(" ") ?? "",
             oauth_info: {
@@ -46,7 +51,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
          
 
           // login
-          const tokenData = await userService.loginByOAuth({
+          const tokenData = await userService.oauthLogin({
             email: user.email!,
             name: user.name?.split(" ")[0] ?? "",
             surname: user.name?.split(" ").slice(1).join(" ") ?? "",

@@ -4,10 +4,18 @@ import { getApiUrl } from '@/config/api';
 export const transactionService = {
     async getTransactions(userId: string) {
         try {
-            const accessToken = await authService.getAccessToken();
+            let accessToken = await authService.getAccessToken();
             
             if (!accessToken) {
-                throw new Error('No access token available');
+                const refreshToken = await authService.getRefreshToken();
+                if (!refreshToken) {
+                    throw new Error('No tokens available. Please log in again.');
+                }
+                const tokens = await authService.refreshAccessToken(refreshToken);
+                if (!tokens) {
+                    throw new Error('Failed to refresh token. Please log in again.');
+                }
+                accessToken = tokens.access_token;
             }
 
             const response = await fetch(getApiUrl(`/api/transactions/user/${userId}`), {
@@ -16,36 +24,14 @@ export const transactionService = {
                 },
             });
 
-            if (response.status === 401) {
-                // Token might be expired, try to refresh
-                const refreshToken = await authService.getRefreshToken();
-                if (!refreshToken) {
-                    throw new Error('No refresh token available');
-                }
-                const refreshed = await authService.refreshAccessToken(refreshToken);
-               
-                if (refreshed) {
-                    // Retry with new token
-                    const newToken = await authService.getAccessToken();
-                    console.log(newToken);
-                    const retryResponse = await fetch(getApiUrl(`/api/transactions/user/${userId}`), {
-                        headers: {
-                            'Authorization': `Bearer ${newToken}`,
-                        },
-                    });
-                    if (!retryResponse.ok) {
-                        throw new Error('Failed to fetch transactions after token refresh');
-                    }
-                    return await retryResponse.json();
-                }
-                throw new Error('Failed to refresh token');
-            }
-
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expired. Please log in again.');
+                }
                 throw new Error('Failed to fetch transactions');
             }
 
-            return await response.json();
+            return response.json();
         } catch (error) {
             console.error('Error fetching transactions:', error);
             throw error;
@@ -54,9 +40,17 @@ export const transactionService = {
 
     async createTransaction(transactionData: any) {
         try {
-            const accessToken = await authService.getAccessToken();
+            let accessToken = await authService.getAccessToken();
             if (!accessToken) {
-                throw new Error('No access token available');
+                const refreshToken = await authService.getRefreshToken();
+                if (!refreshToken) {
+                    throw new Error('No tokens available. Please log in again.');
+                }
+                const tokens = await authService.refreshAccessToken(refreshToken);
+                if (!tokens) {
+                    throw new Error('Failed to refresh token. Please log in again.');
+                }
+                accessToken = tokens.access_token;
             }
 
             const response = await fetch(getApiUrl('/api/transactions/create'), {
@@ -68,37 +62,14 @@ export const transactionService = {
                 body: JSON.stringify(transactionData),
             });
 
-            if (response.status === 401) {
-                // Token might be expired, try to refresh
-                const refreshToken = await authService.getRefreshToken();
-                if (!refreshToken) {
-                    throw new Error('No refresh token available');
-                }
-                const refreshed = await authService.refreshAccessToken(refreshToken);
-                if (refreshed) {
-                    // Retry with new token
-                    const newToken = await authService.getAccessToken();
-                    const retryResponse = await fetch(getApiUrl('/api/transactions/create'), {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${newToken}`,
-                        },
-                        body: JSON.stringify(transactionData),
-                    });
-                    if (!retryResponse.ok) {
-                        throw new Error('Failed to create transaction after token refresh');
-                    }
-                    return await retryResponse.json();
-                }
-                throw new Error('Failed to refresh token');
-            }
-
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expired. Please log in again.');
+                }
                 throw new Error('Failed to create transaction');
             }
 
-            return await response.json();
+            return response.json();
         } catch (error) {
             console.error('Error creating transaction:', error);
             throw error;

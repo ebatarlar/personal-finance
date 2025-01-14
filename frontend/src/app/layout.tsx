@@ -29,8 +29,8 @@ export default async function RootLayout({
   
   
   return (
-    <html lang="en" className={`${geistSans.variable} font-geist-sans`}>
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} font-geist-sans`}>
         <Providers>
           {children}
         </Providers>

@@ -1,7 +1,8 @@
 # Personal Finance App Features
 
 ### User Authentication & Authorization
-- [] Secure user registration and login system
+- [] Secure user registration system
+- [] Secure user login system
 - [x] JWT-based authentication
 - [] Password recovery functionality
 - [x] Login with GitHub

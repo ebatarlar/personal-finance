@@ -6,6 +6,7 @@ from datetime import datetime
 from app.routes.user_routes import router as user_router
 from app.routes.transaction_routes import router as transaction_router
 from app.routes.category_routes import router as category_router
+from app.routes.auth_routes import router as auth_router
 from contextlib import asynccontextmanager
 
 @asynccontextmanager
@@ -26,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include auth routes
+app.include_router(auth_router, prefix="/api", tags=["auth"])
 
 # Include user routes
 app.include_router(user_router, prefix="/api", tags=["users"])

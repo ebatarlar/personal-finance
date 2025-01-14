@@ -1,65 +1,73 @@
 import { getApiUrl } from '@/config/api';
+import { authService } from './authService';
 
 interface User {
+  id?: string;
   email: string;
   name: string;
   surname: string;
   password?: string;
-  oauth_info?: {
-    provider?: string;
-    provider_user_id?: string
-  }
+  is_active?: boolean;
+  is_verified?: boolean;
+  oauth_info?: OAuthInfo;
 }
 
-interface OauthInfo { 
-  provider: string;
+interface OAuthInfo { 
+  provider: 'github' | 'google';
   provider_user_id: string;
 }
 
+
 export const userService = {
-  async createOrUpdateUser(userData: User) {
+  async register(userData: User) {
+    const response = await fetch(getApiUrl('/api/auth/register'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Registration failed');
+    }
+
+    return response.json();
+  },
+
+  async getCurrentUser(): Promise<User | null> {
+    const token = await authService.getAccessToken();
+    if (!token) return null;
+
     try {
-      const response = await fetch(getApiUrl('/api/users/create'), {
-        method: 'POST',
+      const response = await fetch(getApiUrl('/api/users/me'), {
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create/update user');
-      }
-
-      return await response.json();
+      if (!response.ok) return null;
+      return response.json();
     } catch (error) {
-      console.error('Error creating/updating user:', error);
-      throw error;
+      console.error('Error fetching current user:', error);
+      return null;
     }
   },
 
-  async loginByOAuth(userData: User, oauthInfo: OauthInfo) {
-    const requestBody = { oauth_info: oauthInfo, user_data: userData };
-    console.log('loginByOAuth request body:', requestBody);
+  async oauthLogin(userData: User, oauthInfo: OAuthInfo) {
+    const response = await fetch(getApiUrl('/api/auth/oauth'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        oauth_info: oauthInfo,
+        user_data: userData
+      }),
+    });
 
-    try {
-      const response = await fetch(getApiUrl('/api/users/oauth'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to login with OAuth');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error logging in with OAuth:', error);
-      throw error;
+    if (!response.ok) {
+      throw new Error('OAuth login failed');
     }
+
+    return response.json();
   },
 
   async getUserByEmail(email: string) {

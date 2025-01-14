@@ -9,38 +9,61 @@ interface Token {
     expires_at?: number;
 }
 
+interface LoginCredentials {
+    email: string;
+    password: string;
+}
+
+interface PasswordResetRequest {
+    email: string;
+}
+
+interface PasswordReset {
+    token: string;
+    new_password: string;
+}
+
 export const authService = {
     async getAccessToken(): Promise<string | null> {
-        // Check if we're on the server
         if (typeof window === 'undefined') {
             const session = await auth();
             return session?.tokens?.access_token || null;
         }
-        // Client-side
         const session = await getSession();
         return session?.tokens?.access_token || null;
     },
 
     async getRefreshToken(): Promise<string | null> {
-        // Check if we're on the server
         if (typeof window === 'undefined') {
             const session = await auth();
             return session?.tokens?.refresh_token || null;
         }
-        // Client-side
         const session = await getSession();
         return session?.tokens?.refresh_token || null;
+    },
+
+    async login(credentials: LoginCredentials): Promise<Token> {
+        const response = await fetch(getApiUrl('/api/auth/login'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credentials),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Login failed');
+        }
+
+        return response.json();
     },
 
     async refreshAccessToken(refreshToken: string): Promise<Token | null> {
         if (!refreshToken) return null;
 
         try {
-            const response = await fetch(getApiUrl('/api/token/refresh'), {
+            const response = await fetch(getApiUrl('/api/auth/refresh-token'), {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh_token: refreshToken }),
             });
 
@@ -49,11 +72,57 @@ export const authService = {
                 return null;
             }
 
-            const tokens: Token = await response.json();
-            return tokens;
+            return response.json();
         } catch (error) {
             console.error('Error refreshing token:', error);
             return null;
         }
+    },
+
+    async logout(token: string): Promise<boolean> {
+        try {
+            const response = await fetch(getApiUrl('/api/auth/logout'), {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            return response.ok;
+        } catch (error) {
+            console.error('Error during logout:', error);
+            return false;
+        }
+    },
+
+    async requestPasswordReset(data: PasswordResetRequest): Promise<boolean> {
+        const response = await fetch(getApiUrl('/api/auth/forgot-password'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        return response.ok;
+    },
+
+    async resetPassword(data: PasswordReset): Promise<boolean> {
+        const response = await fetch(getApiUrl('/api/auth/reset-password'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        return response.ok;
+    },
+
+    async verifyEmail(token: string): Promise<boolean> {
+        const response = await fetch(getApiUrl('/api/auth/verify-email'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+
+        return response.ok;
     }
 };

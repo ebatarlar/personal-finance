@@ -37,3 +37,8 @@ class Database:
 
 # Create a database instance
 db = Database()
+
+def get_database():
+    if db.db is None:
+        raise Exception("Database not initialized. Make sure to call connect_to_database first.")
+    return db.db
