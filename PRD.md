@@ -95,6 +95,24 @@ Many individuals struggle with managing their personal finances effectively, lac
 ### Backend (Google Cloud Run)
 The backend is deployed on Google Cloud Run, providing a scalable and serverless environment.
 
+source /Users/emrebatarlar/google-cloud-sdk/path.zsh.inc
+source /Users/emrebatarlar/google-cloud-sdk/completion.zsh.inc
+
+gcloud builds submit --tag gcr.io/personal-finance-app-eb/personal-finance-backend
+
+/Users/emrebatarlar/google-cloud-sdk/bin/gcloud run deploy personal-finance-backend --image gcr.io/personal-finance-app-eb/personal-finance-backend --platform managed --region europe-west1 --allow-unauthenticated --set-secrets=MONGODB_URL=mongodb-url:latest,JWT_SECRET_KEY=jwt-secret:latest --min-instances 0 --max-instances 1 --memory 256Mi --timeout 300 --cpu 1
+
+gcloud run deploy personal-finance-backend \  --image gcr.io/personal-finance-app-eb/personal-finance-backend \
+  --platform managed \
+  --region europe-west1 \
+  --allow-unauthenticated \
+  --set-secrets=MONGODB_URL=mongodb-url:latest,JWT_SECRET_KEY=jwt-secret:latest \
+  --min-instances=0 \
+  --max-instances=1 \
+  --memory=256Mi \
+  --timeout=300 \
+  --cpu=1. is this?
+
 - **Production URL**: `https://personal-finance-backend-315388459026.europe-west1.run.app`
 - **Deployment Stack**:
   - Python 3.11

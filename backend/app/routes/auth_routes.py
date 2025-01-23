@@ -106,7 +106,7 @@ async def logout(
     return {"message": "Successfully logged out"}
 
 @router.post("/refresh-token", response_model=TokenResponse)
-@normal_limiter
+@relaxed_limiter
 async def refresh_token(
     request: Request,
     refresh_request: RefreshRequest,

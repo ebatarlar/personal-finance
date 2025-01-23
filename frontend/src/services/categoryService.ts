@@ -7,7 +7,7 @@ interface Category {
     is_default: boolean;
 }
 
-interface CreateCategoryData {
+export interface CreateCategoryData {
     type: 'expense' | 'income';
     name: string;
 }
@@ -62,10 +62,15 @@ export const categoryService = {
 
     async createCustomCategory(userId: string, categoryData: CreateCategoryData) {
         try {
+            const accessToken = await authService.getAccessToken();
+            if (!accessToken) {
+                throw new Error('No access token available');
+            }
             const response = await fetch(getApiUrl(`/api/categories/custom/${userId}`), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                     'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify(categoryData),
             });

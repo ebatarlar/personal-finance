@@ -17,10 +17,10 @@ import { auth } from "../../auth"
 import { LogoutGithub } from "./login/auth-buttons-github"
 
 // Menu items.
-const items = [
+const applicationItems = [
   {
     title: "Home",
-    url: "#",
+    url: "/dashboard",
     icon: Home,
   },
   {
@@ -34,6 +34,13 @@ const items = [
     url: "#",
     icon: Settings,
   },
+]
+
+const preferencesItems = [
+  {
+    title: "My Categories",
+    url: "/categories",
+  }
 ]
 
 export async function AppSidebar(): Promise<React.JSX.Element> {
@@ -53,7 +60,7 @@ export async function AppSidebar(): Promise<React.JSX.Element> {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {applicationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
@@ -66,6 +73,24 @@ export async function AppSidebar(): Promise<React.JSX.Element> {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Preferences</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {preferencesItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
       </SidebarContent>
       <SidebarFooter>
           <SidebarMenu>

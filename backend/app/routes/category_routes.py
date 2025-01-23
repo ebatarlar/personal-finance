@@ -119,7 +119,7 @@ async def create_custom_category(
         )
         
     try:
-        return await category_service.create_custom_category(user_id, category)
+        return await category_service.add_custom_category(user_id, category)
     except Exception as e:
         raise HTTPException(
             status_code=500,

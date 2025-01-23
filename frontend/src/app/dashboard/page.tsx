@@ -17,11 +17,9 @@ export default async function DashboardPage() {
 
   const session = await auth();
 
-  // Set cookies on the server side
-  const headers = new Headers();
-  headers.append('Set-Cookie', `access_token=sdvbsd; Path=/`);
-  headers.append('Set-Cookie', `refresh_token=sdvsdv; Path=/`);
+  //console.log(session);
 
+  
   const transactions = await transactionService.getTransactions(session?.user?.id!);
   
 

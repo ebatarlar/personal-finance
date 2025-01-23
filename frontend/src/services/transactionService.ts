@@ -1,5 +1,6 @@
 import { authService } from './authService';
 import { getApiUrl } from '@/config/api';
+import { signOut } from 'next-auth/react';
 
 export const transactionService = {
     async getTransactions(userId: string) {
