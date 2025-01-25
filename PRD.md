@@ -180,13 +180,20 @@ The backend directory contains the server-side code and services for the applica
 - `main.py`: The entry point for the backend application.
 - `requirements.txt`: Python dependencies.
 - `test_db_connection.py`: Script to test database connections.
-- `venv/`: Virtual environment for Python dependencies.
+- `tests/`: Directory containing test files.
+- `Dockerfile`: Docker configuration for containerization.
+- `.dockerignore`: Specifies which files Docker should ignore.
+- `API_DOCUMENTATION.md`: API documentation and endpoints.
+- `google-cloud-sdk.sh`: Google Cloud SDK configuration script.
 
 ## Backend Directory Structure
 
 ```
 backend/
 ├── .env
+├── .dockerignore
+├── API_DOCUMENTATION.md
+├── Dockerfile
 ├── __pycache__/
 ├── app/
 │   ├── core/
@@ -210,10 +217,12 @@ backend/
 │   │   ├── auth_service.py
 │   │   ├── user_service.py
 │   │   ├── category_service.py
-│   │   ├── transaction_service.py
+│   │   └── transaction_service.py
+├── google-cloud-sdk.sh
 ├── main.py
 ├── requirements.txt
 ├── test_db_connection.py
+├── tests/
 └── venv/
 ```
 
@@ -231,6 +240,19 @@ The frontend directory contains the client-side code for the application built w
 - `public/`: Static files.
 - `src/`: Contains the source code for the frontend application.
   - `app/`: Main application components and routing.
+    - `api/`: API route handlers.
+    - `auth/`: Authentication-related pages.
+    - `dashboard/`: Dashboard pages and components.
+      - `categories/`: Category management components.
+      - `general-reports/`: Reporting and analytics components.
+      - `components/`: Shared dashboard components.
+      - `types/`: Dashboard-specific type definitions.
+      - `layout.tsx`: Dashboard layout component.
+      - `page.tsx`: Main dashboard page.
+    - `fonts/`: Font assets.
+    - `globals.css`: Global styles.
+    - `layout.tsx`: Root layout component.
+    - `page.tsx`: Home page component.
   - `components/`: Reusable UI components.
     - `AddTransDialog.tsx`: Transaction creation dialog.
     - `app-sidebar.tsx`: Application sidebar navigation.
@@ -249,8 +271,6 @@ The frontend directory contains the client-side code for the application built w
     - `authService.ts`: Authentication utilities.
   - `types/`: TypeScript type definitions.
     - `next-auth.d.ts`: NextAuth type declarations.
-- `tailwind.config.ts`: Tailwind CSS configuration.
-- `tsconfig.json`: TypeScript configuration.
 
 ## Frontend Directory Structure
 
@@ -258,69 +278,34 @@ The frontend directory contains the client-side code for the application built w
 frontend/
 ├── .env.local
 ├── .eslintrc.json
-├── .gitignore
 ├── .next/
-├── README.md
 ├── auth.ts
 ├── components.json
 ├── next-env.d.ts
 ├── next.config.ts
 ├── node_modules/
-├── package-lock.json
 ├── package.json
-├── postcss.config.mjs
 ├── public/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── dashboard/
-│   │   │   ├── components/
-│   │   │   ├── layout.tsx
-│   │   │   └── page.tsx
-│   │   ├── favicon.ico
-│   │   ├── fonts/
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── components/
-│   │   ├── AddTransDialog.tsx
-│   │   ├── app-sidebar.tsx
-│   │   ├── providers.tsx
-│   │   ├── login/
-│   │   │   ├── auth-buttons-github.tsx
-│   │   │   └── login-form.tsx
-│   │   └── ui/
-│   │       ├── button.tsx
-│   │       ├── calendar.tsx
-│   │       ├── card.tsx
-│   │       ├── dialog.tsx
-│   │       ├── dropdown-menu.tsx
-│   │       ├── form.tsx
-│   │       ├── input.tsx
-│   │       ├── label.tsx
-│   │       ├── popover.tsx
-│   │       ├── select.tsx
-│   │       ├── separator.tsx
-│   │       ├── sheet.tsx
-│   │       ├── sidebar.tsx
-│   │       ├── skeleton.tsx
-│   │       ├── table.tsx
-│   │       ├── toast.tsx
-│   │       ├── toaster.tsx
-│   │       └── tooltip.tsx
-│   ├── hooks/
-│   │   ├── use-mobile.tsx
-│   │   └── use-toast.ts
-│   ├── lib/
-│   │   └── utils.ts
-│   ├── services/
-│   │   ├── authService.ts
-│   │   ├── userService.ts
-│   │   ├── transactionService.ts
-│   │   └── categoryService.ts
-│   └── types/
-│       └── next-auth.d.ts
-└── tailwind.config.ts
+└── src/
+    ├── app/
+    │   ├── api/
+    │   ├── auth/
+    │   ├── dashboard/
+    │   │   ├── categories/
+    │   │   ├── components/
+    │   │   ├── general-reports/
+    │   │   ├── types/
+    │   │   ├── layout.tsx
+    │   │   └── page.tsx
+    │   ├── fonts/
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   └── page.tsx
+    ├── components/
+    ├── hooks/
+    ├── lib/
+    ├── services/
+    └── types/
 ```
 
 ## Future Enhancements

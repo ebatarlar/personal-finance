@@ -15,11 +15,7 @@ import { authService } from "@/services/authService"
 
 export default async function DashboardPage() {
 
-  const session = await auth();
-
-  //console.log(session);
-
-  
+  const session      = await auth();
   const transactions = await transactionService.getTransactions(session?.user?.id!);
   
 

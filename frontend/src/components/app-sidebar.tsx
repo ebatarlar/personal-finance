@@ -25,7 +25,7 @@ const applicationItems = [
   },
   {
     title: "Reports",
-    url: "#",
+    url: "/dashboard/general-reports",
     icon: ChartNoAxesCombined,
   },
   
@@ -39,7 +39,7 @@ const applicationItems = [
 const preferencesItems = [
   {
     title: "My Categories",
-    url: "/categories",
+    url: "/dashboard/categories",
   }
 ]
 
