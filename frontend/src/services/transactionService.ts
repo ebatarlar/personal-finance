@@ -1,6 +1,6 @@
 import { authService } from './authService';
 import { getApiUrl } from '@/config/api';
-import { signOut } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 export const transactionService = {
     async getTransactions(userId: string) {
@@ -10,12 +10,12 @@ export const transactionService = {
             if (!accessToken) {
                 const refreshToken = await authService.getRefreshToken();
                 if (!refreshToken) {
-                    window.location.href = '/';
+                    redirect('/');
                     throw new Error('Session expired. Please log in again.');
                 }
                 const tokens = await authService.refreshAccessToken(refreshToken);
                 if (!tokens) {
-                    window.location.href = '/';
+                    redirect('/');
                     throw new Error('Failed to refresh token. Please log in again.');
                 }
                 accessToken = tokens.access_token;
@@ -29,7 +29,7 @@ export const transactionService = {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    window.location.href = '/';
+                    redirect('/');
                     throw new Error('Session expired. Please log in again.');
                 }
                 throw new Error('Failed to fetch transactions');
