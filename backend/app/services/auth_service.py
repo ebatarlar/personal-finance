@@ -132,6 +132,7 @@ class AuthService:
         
     async def refresh_token(self, refresh_token: str) -> dict:
         """Get new access token using refresh token."""
+        # Verify the refresh token
         token_data = verify_token(refresh_token, is_refresh_token=True)
         if not token_data:
             raise HTTPException(
@@ -156,6 +157,7 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
             
+        # Create new tokens
         return create_tokens(str(user.id))
 
     async def send_verification_email(self, user_id: UUID) -> bool:

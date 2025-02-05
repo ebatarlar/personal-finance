@@ -118,20 +118,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async jwt({ token, user }) {
+      // If this is a new sign in with user data
       if (user) {
+        const expiresAt = Math.floor(Date.now() / 1000 + 15 * 60); // 15 minutes from now
         return {
           ...token,
           ...user,
-          expires_at: Math.floor(Date.now() / 1000 + 15 * 60), // 15 minutes from now
+          expires_at: expiresAt,
         };
       }
 
-      // Return previous token if the access token has not expired yet
-      if (typeof token.expires_at === 'number' && Date.now() < token.expires_at * 1000) {
+      // Check if token exists and has expiration
+      if (!token.access_token || !token.refresh_token) {
+        return { ...token, error: "NoTokensError" };
+      }
+
+      if (typeof token.expires_at !== 'number') {
+        return {
+          ...token,
+          expires_at: Math.floor(Date.now() / 1000 + 15 * 60),
+        };
+      }
+
+      // Check expiration with 30-second buffer to prevent edge cases
+      const currentTime = Math.floor(Date.now() / 1000);
+      const hasExpired = currentTime >= (token.expires_at - 30);
+
+      if (!hasExpired) {
         return token;
       }
 
-      // Access token has expired, try to refresh it
+      // Token has expired, try to refresh
       try {
         if (!token.refresh_token) {
           return { ...token, error: "NoRefreshTokenError" };
@@ -142,11 +159,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return { ...token, error: "RefreshAccessTokenError" };
         }
 
+        const newExpiresAt = Math.floor(Date.now() / 1000 + 15 * 60);
+        
         return {
           ...token,
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
-          expires_at: tokens.expires_at,
+          expires_at: newExpiresAt,
+          error: undefined
         };
       } catch (error) {
         console.error("Error refreshing access token:", error);
