@@ -1,6 +1,6 @@
 import { authService } from './authService';
 import { getApiUrl } from '@/config/api';
-import { redirect } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 export const transactionService = {
     async getTransactions(userId: string) {
@@ -10,27 +10,28 @@ export const transactionService = {
             if (!accessToken) {
                 const refreshToken = await authService.getRefreshToken();
                 if (!refreshToken) {
-                    redirect('/');
-                    throw new Error('Session expired. Please log in again.');
+                    await signOut({ redirect: true, callbackUrl: '/' });
+                    return null;
                 }
                 const tokens = await authService.refreshAccessToken(refreshToken);
                 if (!tokens) {
-                    redirect('/');
-                    throw new Error('Failed to refresh token. Please log in again.');
+                    await signOut({ redirect: true, callbackUrl: '/' });
+                    return null;
                 }
                 accessToken = tokens.access_token;
             }
 
-            const response = await fetch(getApiUrl(`/api/transactions/user/${userId}`), {
+            const response = await fetch(`${getApiUrl()}/api/transactions/user/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
                 },
             });
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    redirect('/');
-                    throw new Error('Session expired. Please log in again.');
+                    await signOut({ redirect: true, callbackUrl: '/' });
+                    return null;
                 }
                 throw new Error('Failed to fetch transactions');
             }
@@ -48,16 +49,18 @@ export const transactionService = {
             if (!accessToken) {
                 const refreshToken = await authService.getRefreshToken();
                 if (!refreshToken) {
-                    throw new Error('No tokens available. Please log in again.');
+                    await signOut({ redirect: true, callbackUrl: '/' });
+                    return null;
                 }
                 const tokens = await authService.refreshAccessToken(refreshToken);
                 if (!tokens) {
-                    throw new Error('Failed to refresh token. Please log in again.');
+                    await signOut({ redirect: true, callbackUrl: '/' });
+                    return null;
                 }
                 accessToken = tokens.access_token;
             }
 
-            const response = await fetch(getApiUrl('/api/transactions/create'), {
+            const response = await fetch(`${getApiUrl()}/api/transactions/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,7 +71,8 @@ export const transactionService = {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    throw new Error('Session expired. Please log in again.');
+                    await signOut({ redirect: true, callbackUrl: '/' });
+                    return null;
                 }
                 throw new Error('Failed to create transaction');
             }
