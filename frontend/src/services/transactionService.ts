@@ -21,7 +21,7 @@ export const transactionService = {
                 accessToken = tokens.access_token;
             }
 
-            const response = await fetch(`${getApiUrl()}/api/transactions/user/${userId}`, {
+            const response = await fetch(getApiUrl(`/api/transactions/user/${userId}`), {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export const transactionService = {
                 accessToken = tokens.access_token;
             }
 
-            const response = await fetch(`${getApiUrl()}/api/transactions/create`, {
+            const response = await fetch(getApiUrl('/api/transactions/create'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,6 +77,7 @@ export const transactionService = {
                 throw new Error('Failed to create transaction');
             }
 
+            
             return response.json();
         } catch (error) {
             console.error('Error creating transaction:', error);
