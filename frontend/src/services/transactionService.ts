@@ -10,10 +10,12 @@ export const transactionService = {
             if (!accessToken) {
                 const refreshToken = await authService.getRefreshToken();
                 if (!refreshToken) {
-                    throw new Error('No tokens available. Please log in again.');
+                    window.location.href = '/';
+                    throw new Error('Session expired. Please log in again.');
                 }
                 const tokens = await authService.refreshAccessToken(refreshToken);
                 if (!tokens) {
+                    window.location.href = '/';
                     throw new Error('Failed to refresh token. Please log in again.');
                 }
                 accessToken = tokens.access_token;
@@ -27,6 +29,7 @@ export const transactionService = {
 
             if (!response.ok) {
                 if (response.status === 401) {
+                    window.location.href = '/';
                     throw new Error('Session expired. Please log in again.');
                 }
                 throw new Error('Failed to fetch transactions');
